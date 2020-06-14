@@ -1,0 +1,59 @@
+
+enable
+configure terminal
+
+no ip domain lookup
+
+ipcef
+
+access-list 100 permit tcp any any
+access-list 101 permit udp any any
+access-list 102 permit icmp any any
+
+
+priority-list 6 protocol ip high list 102
+priority-list 6 protocol ip medium list 101
+priority-list 6 protocol ip low list 100
+
+interface Loopback0
+ip address 1.1.1.1 255.255.255.255
+exit
+
+interface fa0/1
+ip address 192.168.20.1 255.255.255.0
+priority-group 6
+no shutdown
+exit
+
+
+interface se0/3/0
+ip address 198.168.0.1 255.255.255.0
+tag-switching ip
+mpls ip
+no shutdown
+exit
+
+interface se0/3/1
+ip address 198.167.0.1 255.255.255.0
+tag-switching ip
+mpls ip
+no shutdown
+exit
+
+
+mpls ldp router-id lo0
+
+
+router ospf 1
+network 198.167.0.0 255.255.255.0 area 1
+network 198.168.0.0 255.255.255.0 area 1
+network 192.168.20.0 255.255.255.0 area 1
+mpls ldp autoconfig area 1
+exit
+
+
+
+
+
+
+
